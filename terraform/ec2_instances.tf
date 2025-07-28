@@ -72,7 +72,7 @@ resource "aws_instance" "nifi" {
   }
 
   root_block_device {
-    volume_size = 24
+    volume_size = 12
     volume_type = "gp3"
   }
 
