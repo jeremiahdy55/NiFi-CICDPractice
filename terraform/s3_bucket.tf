@@ -42,6 +42,9 @@ resource "null_resource" "upload_nifi_ip" {
   depends_on = [aws_instance.nifi]
 
   provisioner "local-exec" {
+    environment = {
+      AWS_REGION = "us-west-2"
+    }
     command = <<EOT
         echo "${aws_instance.nifi.public_ip}" > /tmp/nifi_ip.txt
         aws s3 cp /tmp/nifi_ip.txt s3://${aws_s3_bucket.ci_config_bucket.bucket}/nifi_ip.txt
