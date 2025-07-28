@@ -16,11 +16,14 @@ sleep 30
 exec > /var/log/jenkins-setup.log 2>&1
 
 # System update
-sudo apt update -y
-sudo apt upgrade -y
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+# Install zip and unzip
+sudo apt-get install -y zip unzip
 
 # Install Java (required to run Jenkins)
-sudo apt install -y openjdk-17-jdk curl gnupg software-properties-common
+sudo apt-get install -y openjdk-17-jdk curl gnupg software-properties-common
 
 # Add Jenkins repository and import GPG key
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
@@ -31,8 +34,11 @@ https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
 /etc/apt/sources.list.d/jenkins.list > /dev/null
 
 # Install Jenkins
-sudo apt update -y
-sudo apt install -y jenkins
+sudo apt-get update -y
+sudo apt-get install -y jenkins
+
+# Add S3_bucket file name as environment variable
+echo "S3_BUCKET=${aws_s3_bucket.ci_config_bucket.bucket}" >> /etc/environment
 
 # Enable and start Jenkins
 sudo systemctl enable jenkins

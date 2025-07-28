@@ -37,14 +37,14 @@ resource "aws_s3_bucket_policy" "ci_config_bucket_policy" {
 
 }
 
-# # Write Kafka IP address to S3 Bucket
-# resource "null_resource" "upload_kafka_ip" {
-#   depends_on = [aws_instance.kafka]
+# Write NiFi IP address to S3 Bucket
+resource "null_resource" "upload_nifi_ip" {
+  depends_on = [aws_instance.nifi]
 
-#   provisioner "local-exec" {
-#     command = <<EOT
-#         echo "${aws_instance.kafka.public_ip}" > /tmp/kafka_ip.txt
-#         aws s3 cp /tmp/kafka_ip.txt s3://${aws_s3_bucket.ci_config_bucket.bucket}/kafka_ip.txt
-#     EOT
-#   }
-# }
+  provisioner "local-exec" {
+    command = <<EOT
+        echo "${aws_instance.nifi.public_ip}" > /tmp/nifi_ip.txt
+        aws s3 cp /tmp/nifi_ip.txt s3://${aws_s3_bucket.ci_config_bucket.bucket}/nifi_ip.txt
+    EOT
+  }
+}
