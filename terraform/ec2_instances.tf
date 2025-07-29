@@ -25,6 +25,12 @@ sudo apt-get install -y zip unzip
 # Install Java (required to run Jenkins)
 sudo apt-get install -y openjdk-17-jdk curl gnupg software-properties-common
 
+# Install AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+sudo rm -rf awscliv2.zip aws/
+
 # Add Jenkins repository and import GPG key
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
 /usr/share/keyrings/jenkins-keyring.asc > /dev/null
