@@ -37,17 +37,17 @@ pipeline {
             }
 
 
-        // stage('Build nifi-assembly') {
-        //     steps {
-        //         dir('nifi-assembly') {
-        //             sh 'mvn clean install -DskipTests'
-        //             // cd to target
-        //             dir('target') {
-        //                 sh 'zip -r nifi-1.26.0-bin.zip nifi-1.26.0-bin'
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build nifi-assembly') {
+            steps {
+                dir('nifi-assembly') {
+                    sh 'mvn clean install -DskipTests'
+                    // cd to target
+                    dir('target') {
+                        sh 'zip -r nifi-1.26.0-bin.zip nifi-1.26.0-bin'
+                    }
+                }
+            }
+        }
 
 // stage('Copy artifact to NiFi server via SFTP') {
 //   steps {
