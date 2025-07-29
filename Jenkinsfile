@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
-        REPO_URL        = 'https://github.com/apache/nifi.git'
+        REPO_URL        = 'https://github.com/jeremiahdy55/NiFi-CICDPractice.git'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
 
@@ -27,21 +27,21 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: '', url: "${env.REPO_URL}", credentialsId: "${env.GIT_CREDENTIALS}", changelog: false, poll: false
-                sh 'git checkout rel/nifi-1.26.0'
+                // sh 'git checkout rel/nifi-1.26.0'
             }
         }
 
-        stage('Build nifi-assembly') {
-            steps {
-                dir('nifi-assembly') {
-                    sh 'mvn clean install -DskipTests'
-                    // cd to target
-                    dir('target') {
-                        sh 'zip -r nifi-1.26.0-bin.zip nifi-1.26.0-bin'
-                    }
-                }
-            }
-        }
+        // stage('Build nifi-assembly') {
+        //     steps {
+        //         dir('nifi-assembly') {
+        //             sh 'mvn clean install -DskipTests'
+        //             // cd to target
+        //             dir('target') {
+        //                 sh 'zip -r nifi-1.26.0-bin.zip nifi-1.26.0-bin'
+        //             }
+        //         }
+        //     }
+        // }
 
 // stage('Copy artifact to NiFi server via SFTP') {
 //   steps {
