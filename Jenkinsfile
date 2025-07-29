@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
-        REPO_URL        = 'https://github.com/jeremiahdy55/NiFi-CICDPractice.git' // Github project monorepo
+        REPO_URL        = 'https://github.com/apache/nifi.git'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
 
