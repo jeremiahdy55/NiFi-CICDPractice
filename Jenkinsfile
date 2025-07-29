@@ -41,7 +41,7 @@ pipeline {
         //             }
         //         }
         //     }
-        }
+        // }
 
 // stage('Copy artifact to NiFi server via SFTP') {
 //   steps {
