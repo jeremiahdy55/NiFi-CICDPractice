@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
+        SSH_KEY         = 'nifi_ssh_key'
         REPO_URL        = 'https://github.com/apache/nifi.git'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
@@ -51,7 +52,7 @@ pipeline {
 
         stage('Copy artifact to NiFi server via SFTP') {
             steps {
-                sshagent(['nifi_ssh_key']) {
+                sshagent([env.SSH_KEY]) {
                     script {
                         sh '''
                             # Fetch NiFi EC2 Instance's public IP from S3
