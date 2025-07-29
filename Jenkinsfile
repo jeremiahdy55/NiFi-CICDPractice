@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
-        REPO_URL        = 'https://github.com/jeremiahdy55/NiFi-CICDPractice.git'
+        REPO_URL        = 'https://github.com/jeremiahdy55/NiFi-CICDPractice.git' // Github project monorepo
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
 
@@ -26,8 +26,9 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                git branch: '', url: "${env.REPO_URL}", credentialsId: "${env.GIT_CREDENTIALS}", changelog: false, poll: false
-                // sh 'git checkout rel/nifi-1.26.0'
+                git
+                    url: "${env.REPO_URL}",
+                    credentialsId: "${env.GIT_CREDENTIALS}"
             }
         }
 
@@ -41,7 +42,7 @@ pipeline {
         //             }
         //         }
         //     }
-        // }
+        }
 
 // stage('Copy artifact to NiFi server via SFTP') {
 //   steps {
