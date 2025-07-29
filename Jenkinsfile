@@ -10,7 +10,7 @@ pipeline {
     // **tools** must be setup in Jenkins-Tools config
     tools {
         maven 'maven3.9.3' 
-        jdk 'jdk17'
+        // jdk 'jdk17'
     }
 
     stages {
@@ -59,6 +59,12 @@ pipeline {
     }
 
     post {
+        success{
+            echo 'Build success!'
+        }
+        failure{
+            echo 'Build failure :('
+        }
         // success {
         //     echo 'All microservices built and pushed successfully! Proceeding to deploy to EKS.'
 
