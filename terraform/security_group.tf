@@ -1,6 +1,6 @@
 resource "aws_security_group" "default" {
   name        = "ci-cd-sg"
-  description = "Allow SSH, HTTP"
+  description = "Allow SSH, HTTP to Jenkis and NiFi"
   vpc_id = aws_vpc.main.id
 
   ingress {
@@ -12,7 +12,15 @@ resource "aws_security_group" "default" {
   }
 
   ingress {
-    description = "Jenkins and NiFi UI Port"
+    description = "NiFi UI Port"
+    from_port   = 8443
+    to_port     = 8443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Jenkins UI Port"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
