@@ -26,9 +26,8 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                git branch: 'rel/nifi-1.26.0',
-                    url: "${env.REPO_URL}",
-                    credentialsId: "${env.GIT_CREDENTIALS}"
+                git branch: '', url: "${env.REPO_URL}", credentialsId: "${env.GIT_CREDENTIALS}", changelog: false, poll: false
+                sh 'git checkout tags/rel/nifi-1.26.0'
             }
         }
 
