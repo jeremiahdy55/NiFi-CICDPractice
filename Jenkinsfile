@@ -76,31 +76,5 @@ EOF
         failure{
             echo 'Build failure :('
         }
-        // success {
-        //     echo 'All microservices built and pushed successfully! Proceeding to deploy to EKS.'
-
-        //     script {
-        //         // Configure kubectl
-        //         sh """
-        //             set -e
-        //             aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
-        //             kubectl get nodes
-        //         """
-
-        //         // Loop through services and deploy
-        //         def services = ['order-ms', 'delivery-ms', 'payment-ms', 'stock-ms']
-        //         services.each { svc ->
-        //             dir("${svc}/k8s") {
-        //                 sh "kubectl apply -f deployment.yaml"
-        //                 sh "kubectl apply -f service.yaml"
-        //                 sh "kubectl rollout status deployment/${svc}-deployment || true"
-        //             }
-        //         }
-        //     }
-        // }
-
-        // failure {
-        //     echo 'Pipeline failed before deployment.'
-        // }
     }
 }
