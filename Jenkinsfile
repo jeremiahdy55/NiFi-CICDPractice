@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
-        REPO_URL        = 'https://github.com/apache/nifi.git' // Github project monorepo
+        REPO_URL        = 'https://github.com/apache/nifi.git'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
 
@@ -27,7 +27,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: '', url: "${env.REPO_URL}", credentialsId: "${env.GIT_CREDENTIALS}", changelog: false, poll: false
-                sh 'git checkout tags/rel/nifi-1.26.0'
+                sh 'git checkout rel/nifi-1.26.0'
             }
         }
 
