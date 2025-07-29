@@ -26,11 +26,16 @@ pipeline {
         
         stage('Checkout') {
             steps {
-                git url: "${env.REPO_URL}",
-                    credentialsId: "${env.GIT_CREDENTIALS}",
-                    branch: 'refs/tags/rel/nifi-1.26.0'
+                checkout([$class: 'GitSCM', 
+                branches: [[name: 'refs/tags/rel/nifi-1.26.0']], 
+                userRemoteConfigs: [[
+                    url: "${env.REPO_URL}",
+                    credentialsId: "${env.GIT_CREDENTIALS}"
+                ]]
+                ])
             }
-        }
+            }
+
 
         // stage('Build nifi-assembly') {
         //     steps {
