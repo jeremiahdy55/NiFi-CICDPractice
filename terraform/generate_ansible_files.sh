@@ -33,28 +33,92 @@ cat <<EOF > "$ANSIBLE_DIR/configure_servers.yml"
   hosts: jenkins
   become: true
   tasks:
-    - name: Install dependencies
+    - name: Update and upgrade apt packages
       apt:
-        name: "{{ item }}"
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install required packages
+      apt:
+        name:
+          - openjdk-17-jdk
+          - unzip
+          - curl
+          - gnupg
+          - software-properties-common
+          - zip
+        state: present
+
+    - name: Download AWS CLI installer
+      get_url:
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscliv2.zip
+        mode: '0644'
+
+    - name: Unzip AWS CLI installer
+      unarchive:
+        src: /tmp/awscliv2.zip
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Install AWS CLI
+      command: sudo /tmp/aws/install
+      args:
+        creates: /usr/local/bin/aws
+
+    - name: Clean up AWS CLI installer files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/awscliv2.zip
+        - /tmp/aws
+
+    - name: Add Jenkins repository GPG key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        state: present
+
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        filename: jenkins
+        state: present
+        codename: stable
+        update_cache: yes
+
+    - name: Download and save Jenkins repo keyring
+      get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: '0644'
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
         state: present
         update_cache: yes
-      loop:
-        - openjdk-17-jdk
-        - unzip
-        - curl
 
-    - name: Copy Jenkins key
-      copy:
-        src: "${KEY_PATH}"
-        dest: /home/ubuntu/TF_NiFi_Server_KEY.pem
-        owner: ubuntu
-        mode: '0600'
+    - name: Add S3_BUCKET environment variable to /etc/environment
+      lineinfile:
+        path: /etc/environment
+        line: 'S3_BUCKET={{ lookup("env", "S3_BUCKET") }}'
+        create: yes
+        state: present
 
-    - name: Start Jenkins
+    - name: Enable and start Jenkins service
       systemd:
         name: jenkins
         enabled: yes
         state: started
+
+    - name: Copy Jenkins SSH private key
+      copy:
+        src: "{{ KEY_PATH }}"
+        dest: /home/ubuntu/TF_NiFi_Server_KEY.pem
+        owner: ubuntu
+        mode: '0600'
+
 
 - name: Configure NiFi
   hosts: nifi
