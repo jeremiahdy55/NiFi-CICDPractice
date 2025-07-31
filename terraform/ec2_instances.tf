@@ -8,48 +8,48 @@ resource "aws_instance" "jenkins" {
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.jenkins_profile.name
 
-  # Run these commands on creation
-user_data = <<-EOF
-#!/bin/bash
+#   # Run these commands on creation
+# user_data = <<-EOF
+# #!/bin/bash
 
-sleep 30
-exec > /var/log/jenkins-setup.log 2>&1
+# sleep 30
+# exec > /var/log/jenkins-setup.log 2>&1
 
-# System update
-sudo apt-get update -y
-sudo apt-get upgrade -y
+# # System update
+# sudo apt-get update -y
+# sudo apt-get upgrade -y
 
-# Install zip and unzip
-sudo apt-get install -y zip unzip
+# # Install zip and unzip
+# sudo apt-get install -y zip unzip
 
-# Install Java (required to run Jenkins)
-sudo apt-get install -y openjdk-17-jdk curl gnupg software-properties-common
+# # Install Java (required to run Jenkins)
+# sudo apt-get install -y openjdk-17-jdk curl gnupg software-properties-common
 
-# Install AWS CLI
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-sudo rm -rf awscliv2.zip aws/
+# # Install AWS CLI
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+# unzip awscliv2.zip
+# sudo ./aws/install
+# sudo rm -rf awscliv2.zip aws/
 
-# Add Jenkins repository and import GPG key
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
-/usr/share/keyrings/jenkins-keyring.asc > /dev/null
+# # Add Jenkins repository and import GPG key
+# curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+# /usr/share/keyrings/jenkins-keyring.asc > /dev/null
 
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-/etc/apt/sources.list.d/jenkins.list > /dev/null
+# echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+# https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+# /etc/apt/sources.list.d/jenkins.list > /dev/null
 
-# Install Jenkins
-sudo apt-get update -y
-sudo apt-get install -y jenkins
+# # Install Jenkins
+# sudo apt-get update -y
+# sudo apt-get install -y jenkins
 
-# Add S3_bucket file name as environment variable
-echo "S3_BUCKET=${aws_s3_bucket.ci_config_bucket.bucket}" >> /etc/environment
+# # Add S3_bucket file name as environment variable
+# echo "S3_BUCKET=${aws_s3_bucket.ci_config_bucket.bucket}" >> /etc/environment
 
-# Enable and start Jenkins
-sudo systemctl enable jenkins
-sudo systemctl start jenkins
-EOF
+# # Enable and start Jenkins
+# sudo systemctl enable jenkins
+# sudo systemctl start jenkins
+# EOF
 
   tags = {
     Name = "Jenkins-Server-fromTF"
