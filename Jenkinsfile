@@ -52,22 +52,30 @@ pipeline {
 
         stage('Copy artifact to NiFi server via SFTP') {
             steps {
-                sshagent([env.SSH_KEY]) {
-                    script {
-                        sh '''
-                            # Fetch NiFi EC2 Instance's public IP from S3
-                            aws s3 cp s3://$S3_BUCKET/nifi_ip.txt nifi_ip.txt
-                            NIFI_IP=$(cat nifi_ip.txt)
+                script {
+                    sh '''
+                        # Fetch NiFi EC2 Instance's public IP from S3
+                        aws s3 cp s3://$S3_BUCKET/nifi_ip.txt nifi_ip.txt
+                        NIFI_IP=$(cat nifi_ip.txt)
 
-                            sftp -o StrictHostKeyChecking=no ubuntu@$NIFI_IP << EOF
-put nifi-assembly/target/nifi-1.26.0-bin.zip /home/ubuntu/nifi-1.26.0-bin.zip
-bye
+                        KEY_PATH="/home/ubuntu/TF_NiFi_Server_KEY.pem"
+                        chmod 400 $KEY_PATH
+
+                        # Transfer the zip file to the NiFi EC2 instance using SCP
+                        scp -i $KEY_PATH -o StrictHostKeyChecking=no \
+                            nifi-assembly/target/nifi-1.26.0-bin.zip \
+                            ubuntu@$NIFI_IP:/home/ubuntu/
+
+                        # SSH into the EC2 instance and unzip
+                        ssh -i $KEY_PATH -o StrictHostKeyChecking=no ubuntu@$NIFI_IP << EOF
+                            unzip -o /home/ubuntu/nifi-1.26.0-bin.zip -d /home/ubuntu/
+                            echo "NiFi unzipped successfully."
 EOF
-        '''
-      }
-    }
-  }
-}
+                    '''
+                    }
+                }
+            }
+
     }
 
     post {
