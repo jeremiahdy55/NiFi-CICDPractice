@@ -6,6 +6,10 @@ output "nifi_public_ip" {
   value = aws_instance.nifi.public_ip
 }
 
+output "nifi_private_ip" {
+  value = aws_instance.nifi.private_ip
+}
+
 output "vpc_id" {
   value = aws_vpc.main.id
 }
