@@ -8,16 +8,20 @@ resource "aws_instance" "jenkins" {
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.jenkins_profile.name
 
-#   # Run these commands on creation
-# user_data = <<-EOF
-# #!/bin/bash
+  # Run these commands on creation
+  user_data = <<-EOF
+  #!/bin/bash
 
-# sleep 30
-# exec > /var/log/jenkins-setup.log 2>&1
+  sleep 30
+  exec > /var/log/jenkins-setup.log 2>&1
 
-# # System update
-# sudo apt-get update -y
-# sudo apt-get upgrade -y
+  # System update
+  sudo apt-get update -y
+  sudo apt-get upgrade -y
+
+  # Add S3_bucket file name as environment variable
+  echo "S3_BUCKET=${aws_s3_bucket.ci_config_bucket.bucket}" >> /etc/environment
+EOF
 
 # # Install zip and unzip
 # sudo apt-get install -y zip unzip
@@ -43,13 +47,9 @@ resource "aws_instance" "jenkins" {
 # sudo apt-get update -y
 # sudo apt-get install -y jenkins
 
-# # Add S3_bucket file name as environment variable
-# echo "S3_BUCKET=${aws_s3_bucket.ci_config_bucket.bucket}" >> /etc/environment
-
 # # Enable and start Jenkins
 # sudo systemctl enable jenkins
 # sudo systemctl start jenkins
-# EOF
 
   tags = {
     Name = "Jenkins-Server-fromTF"

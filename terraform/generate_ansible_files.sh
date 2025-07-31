@@ -95,13 +95,6 @@ cat <<EOF > "$ANSIBLE_DIR/configure_servers.yml"
         state: present
         update_cache: yes
 
-    - name: Add S3_BUCKET environment variable to /etc/environment
-      lineinfile:
-        path: /etc/environment
-        line: 'S3_BUCKET={{ lookup("env", "S3_BUCKET") }}'
-        create: yes
-        state: present
-
     - name: Enable and start Jenkins service
       systemd:
         name: jenkins
