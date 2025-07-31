@@ -43,24 +43,18 @@
         - /tmp/awscliv2.zip
         - /tmp/aws
 
-    - name: Add Jenkins repository GPG key
-      apt_key:
+    - name: Download and save Jenkins GPG keyring
+      get_url:
         url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-        state: present
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: '0644'
 
     - name: Add Jenkins repository
       apt_repository:
         repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
         filename: jenkins
         state: present
-        codename: stable
         update_cache: yes
-
-    - name: Download and save Jenkins repo keyring
-      get_url:
-        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-        dest: /usr/share/keyrings/jenkins-keyring.asc
-        mode: '0644'
 
     - name: Install Jenkins
       apt:
