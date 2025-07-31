@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GIT_CREDENTIALS = 'github_credentials'
-        SSH_KEY         = 'nifi_ssh_key'
+        // SSH_KEY         = 'nifi_ssh_key'
         REPO_URL        = 'https://github.com/apache/nifi.git'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
@@ -42,10 +42,7 @@ pipeline {
             steps {
                 dir('nifi-assembly') {
                     sh 'mvn clean install -DskipTests'
-                    // cd to target
-                    dir('target') {
-                        sh 'zip -r nifi-1.26.0-bin.zip nifi-1.26.0-bin'
-                    }
+                    sh 'zip -r ../nifi-1.26.0-bin.zip target/nifi-1.26.0-bin'
                 }
             }
         }
@@ -55,7 +52,7 @@ pipeline {
                 script {
                     sh '''
                         # Fetch NiFi EC2 Instance's public IP from S3
-                        aws s3 cp s3://$S3_BUCKET/nifi_ip.txt nifi_ip.txt
+                        aws s3 cp s3://\$S3_BUCKET/nifi_ip.txt nifi_ip.txt
                         NIFI_IP=$(cat nifi_ip.txt)
 
                         KEY_PATH="/home/ubuntu/TF_NiFi_Server_KEY.pem"
