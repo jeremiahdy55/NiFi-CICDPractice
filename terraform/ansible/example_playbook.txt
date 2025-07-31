@@ -1,0 +1,40 @@
+- name: Configure Jenkins
+  hosts: jenkins
+  become: true
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - openjdk-17-jdk
+        - unzip
+        - curl
+
+    - name: Copy Jenkins key
+      copy:
+        src: ./<PRIVATE-KEY>.pem
+        dest: /home/ubuntu/<PRIVATE-KEY>.pem
+        owner: ubuntu
+        mode: '0600'
+
+    - name: Start Jenkins
+      systemd:
+        name: jenkins
+        enabled: yes
+        state: started
+
+- name: Configure NiFi
+  hosts: nifi
+  become: true
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - openjdk-17-jdk
+        - unzip
+        - curl
