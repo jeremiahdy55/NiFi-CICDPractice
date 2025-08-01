@@ -45,7 +45,7 @@ pipeline {
                     script {
                         sh """
                             # Fetch S3_BUCKET Address
-                            export S3_BUCKET=\$(grep '^S3_BUCKET=' /etc/environment | cut -d '=' -f2)
+                            S3_BUCKET=\$(grep '^S3_BUCKET=' /etc/environment | cut -d '=' -f2)
                             
                             # Fetch NiFi EC2 Instance's public IP from S3
                             aws s3 cp s3://\$S3_BUCKET/nifi_ip.txt nifi_ip.txt
@@ -54,7 +54,7 @@ pipeline {
                             # Transfer the zip file to the NiFi EC2 instance using SCP (no -i needed)
                             scp -o StrictHostKeyChecking=no \
                                 ./${env.NIFI_VERSION}-bin.zip \
-                                ubuntu@$NIFI_IP:/home/ubuntu/
+                                ubuntu@\$NIFI_IP:/home/ubuntu/
 
                             # SSH into the EC2 instance and unzip
                             ssh -o StrictHostKeyChecking=no ubuntu@\$NIFI_IP << EOF
