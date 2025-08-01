@@ -34,7 +34,11 @@ pipeline {
             steps {
                 dir('nifi-assembly') {
                     sh 'mvn clean install -DskipTests'
-                    sh "zip -r ../${env.NIFI_VERSION}-bin.zip target/${env.NIFI_VERSION}-bin"
+
+                    sh """
+                        cd target/${env.NIFI_VERSION}-bin
+                        zip -r ../../../${env.NIFI_VERSION}-bin.zip .
+                    """
                 }
             }
         }
