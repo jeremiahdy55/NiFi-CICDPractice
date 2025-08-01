@@ -288,5 +288,5 @@ EOF
 echo "Generated files:"
 echo "  $ANSIBLE_DIR/inventory.ini"
 echo "  $ANSIBLE_DIR/configure_ec2instances.yml"
-echo "  $ANSIBLE_DIR/configure_ec2instances.yml"
+echo "  $ANSIBLE_DIR/start_nifi.yml"
 
