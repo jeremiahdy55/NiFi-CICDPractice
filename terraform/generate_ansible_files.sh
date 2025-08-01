@@ -104,7 +104,7 @@ cat <<EOF > "$ANSIBLE_DIR/configure_servers.yml"
     - name: Copy Jenkins SSH private key
       copy:
         src: "{{ KEY_PATH }}"
-        dest: /home/ubuntu/TF_NiFi_Server_KEY.pem
+        dest: /home/jenkins/TF_NiFi_Server_KEY.pem
         owner: ubuntu
         mode: '0600'
 
