@@ -210,7 +210,7 @@ EOF
 
 # Generate start_nifi.yml
 cat <<EOF > "$ANSIBLE_DIR/start_nifi.yml"
-- name: Update NiFi properties
+- name: Update NiFi properties and start NiFi
   hosts: nifi
   become: yes
   vars:
@@ -289,4 +289,3 @@ echo "Generated files:"
 echo "  $ANSIBLE_DIR/inventory.ini"
 echo "  $ANSIBLE_DIR/configure_ec2instances.yml"
 echo "  $ANSIBLE_DIR/start_nifi.yml"
-
