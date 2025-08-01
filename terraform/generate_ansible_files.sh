@@ -32,8 +32,6 @@ cat <<EOF > "$ANSIBLE_DIR/configure_servers.yml"
 - name: Configure Jenkins
   hosts: jenkins
   become: true
-  vars:
-    KEY_PATH: "${KEY_PATH}"
   tasks:
     - name: Update and upgrade apt packages
       apt:
