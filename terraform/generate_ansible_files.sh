@@ -216,7 +216,7 @@ cat <<EOF > "$ANSIBLE_DIR/start_nifi.yml"
   vars:
     nifi_release_name: "${NIFI_VERSION}"
     nifi_properties_file: /home/ubuntu/${NIFI_VERSION}/conf/nifi.properties
-    nifi_start_file: /home/ubuntu"${NIFI_VERSION}/bin/nifi.sh
+    nifi_start_file: /home/ubuntu/${NIFI_VERSION}/bin/nifi.sh
     nifi_private_IP: "${NIFI_PRIVATE_IP}"
 
   tasks:
