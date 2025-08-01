@@ -1,10 +1,10 @@
 # --- Create S3 Bucket ---
 resource "aws_s3_bucket" "ci_config_bucket" {
-  bucket = "cicd-config-bucket-${random_id.suffix.hex}"
+  bucket = "nifi-bucket-${random_id.suffix.hex}"
   force_destroy = true
 
   tags = {
-    Name = "cicd-config-bucket"
+    Name = "nifi-config-bucket"
     Environment = "CI"
   }
 }

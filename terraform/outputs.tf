@@ -18,6 +18,6 @@ output "subnet_id" {
   value = aws_subnet.public.id
 }
 
-output "ci_config_bucket_name" {
+output "S3_bucket_name" {
   value = aws_s3_bucket.ci_config_bucket.bucket
 }
