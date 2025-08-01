@@ -19,12 +19,15 @@ JENKINS_IP=$(terraform output -raw jenkins_public_ip)
 NIFI_IP=$(terraform output -raw nifi_public_ip)
 
 # Generate inventory.ini
+# ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+# ^^ disables the "Host not known, trust this source?" message
+# ^^ i.e. trusts anything (only good for ephermal/known/internal environments)
 cat <<EOF > "$ANSIBLE_DIR/inventory.ini"
 [jenkins]
-${JENKINS_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${KEY_PATH}
+${JENKINS_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${KEY_PATH} ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
 [nifi]
-${NIFI_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${KEY_PATH}
+${NIFI_IP} ansible_user=ubuntu ansible_ssh_private_key_file=${KEY_PATH} ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 EOF
 
 # Generate configure_servers.yml
