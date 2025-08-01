@@ -5,6 +5,8 @@ pipeline {
         GIT_CREDENTIALS = 'github_credentials'
         SSH_KEY         = 'nifi_ssh_key'
         REPO_URL        = 'https://github.com/apache/nifi.git'
+        REPO_BRANCH     = 'refs/tags/rel/nifi-1.26.0'
+        NIFI_VERSION    = 'nifi-1.26.0'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
     }
 
@@ -18,7 +20,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'refs/tags/rel/nifi-1.26.0']], 
+                    branches: [[name: env.REPO_BRANCH]], 
                     userRemoteConfigs: [[
                         url: "${env.REPO_URL}",
                         credentialsId: "${env.GIT_CREDENTIALS}"
@@ -32,7 +34,7 @@ pipeline {
             steps {
                 dir('nifi-assembly') {
                     sh 'mvn clean install -DskipTests'
-                    sh 'zip -r ../nifi-1.26.0-bin.zip target/nifi-1.26.0-bin'
+                    sh "zip -r ../${env.NIFI_VERSION}-bin.zip target/${env.NIFI_VERSION}-bin"
                 }
             }
         }
@@ -41,7 +43,7 @@ pipeline {
             steps {
                 sshagent([env.SSH_KEY]) {
                     script {
-                        sh '''
+                        sh """
                             # Fetch S3_BUCKET Address
                             export S3_BUCKET=$(grep '^S3_BUCKET=' /etc/environment | cut -d '=' -f2)
                             
@@ -51,15 +53,15 @@ pipeline {
 
                             # Transfer the zip file to the NiFi EC2 instance using SCP (no -i needed)
                             scp -o StrictHostKeyChecking=no \
-                                nifi-assembly/target/nifi-1.26.0-bin.zip \
+                                ./${env.NIFI_VERSION}-bin.zip \
                                 ubuntu@$NIFI_IP:/home/ubuntu/
 
                             # SSH into the EC2 instance and unzip
                             ssh -o StrictHostKeyChecking=no ubuntu@$NIFI_IP << EOF
-                                unzip -o /home/ubuntu/nifi-1.26.0-bin.zip -d /home/ubuntu/
+                                unzip -o /home/ubuntu/${env.NIFI_VERSION}-bin.zip -d /home/ubuntu/
                                 echo "NiFi unzipped successfully."
 EOF
-                        '''
+                        """
                     }
                 }
             }
