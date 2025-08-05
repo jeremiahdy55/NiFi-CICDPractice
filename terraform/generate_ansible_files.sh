@@ -5,7 +5,7 @@
 KEY_PATH="$1"
 NIFI_VERSION="$2"
 if [ -z "$KEY_PATH" ] || [ -z "$NIFI_VERSION" ]; then
-  echo "Usage: sh $0 /path/to/private-key.pem"
+  echo "Usage: sh $0 <PATH TO PRIVATE KEY> <NIFI VERSION TO BUILD> "
   exit 1
 fi
 
@@ -49,6 +49,7 @@ cat <<EOF > "$ANSIBLE_DIR/configure_ec2instances.yml"
           - openjdk-17-jdk
           - unzip
           - curl
+          - docker.io
           - gnupg
           - software-properties-common
           - zip
@@ -97,6 +98,18 @@ cat <<EOF > "$ANSIBLE_DIR/configure_ec2instances.yml"
         name: jenkins
         state: present
         update_cache: yes
+      
+    - name: Enable and start Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Add Jenkins user to docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
 
     - name: Enable and start Jenkins service
       systemd:
