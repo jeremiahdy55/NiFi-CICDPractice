@@ -120,6 +120,37 @@ EOF
                 }
             }
         }
+        // TODO: modify build {nifi.properties} file before docker build
+        //       try and slim down image size
+        //       deploy to a terraform-issued EKS group
+        
+
+        // stage('Deploy to NiFi EC2') {
+        //         steps {
+        //             sshagent (credentials: ['nifi_ssh_key']) {
+        //                 sh """
+        //                     # Fetch S3_BUCKET Address
+        //                     S3_BUCKET=\$(grep '^S3_BUCKET=' /etc/environment | cut -d '=' -f2)
+                            
+        //                     # Fetch NiFi EC2 Instance's public IP from S3
+        //                     aws s3 cp s3://\$S3_BUCKET/nifi_ip.txt nifi_ip.txt
+        //                     NIFI_IP=\$(cat nifi_ip.txt)
+
+        //                     ssh -o StrictHostKeyChecking=no ubuntu@\$NIFI_IP << 'ENDSSH'
+        //                         echo "Pulling Docker image..."
+        //                         docker pull ${env.FULL_TAG}
+                                
+        //                         echo "Stopping existing container (if any)..."
+        //                         docker rm -f nifi-server || true
+
+        //                         echo "Running new container..."
+        //                         docker run -d --name nifi-server -p 8443:8443 ${env.FULL_TAG}
+        //                     ENDSSH
+        //                 """
+        //             }
+        //         }
+        //     }
+
     }
 
     post {
