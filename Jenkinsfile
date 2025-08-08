@@ -9,7 +9,7 @@ pipeline {
     
 
     parameters {
-        // string(name: 'NIFI_VERSION', defaultValue: '1.26.0', description: 'NiFi version to build')
+        string(name: 'NIFI_VERSION', defaultValue: '1.26.0', description: 'NiFi version to build')
         string(name: 'DOCKERHUB_USER', defaultValue: 'jeremiahjava55', description: 'Docker Hub username')
         string(name: 'IMAGE_TAG', defaultValue: '1.26.0', description: 'Docker image tag')
     }
@@ -20,7 +20,7 @@ pipeline {
         SSH_KEY         = 'nifi_ssh_key'
         REPO_URL        = 'https://github.com/apache/nifi.git'
         REPO_BRANCH     = "refs/tags/rel/nifi-${params.NIFI_VERSION}"
-        NIFI_VERSION    = 'nifi-1.26.0'
+        // NIFI_VERSION    = 'nifi-1.26.0'
         AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
         IMAGE_NAME      = "${params.DOCKERHUB_USER}/nifi-custom"
         FULL_TAG        = "${IMAGE_NAME}:${params.IMAGE_TAG}"
@@ -57,8 +57,8 @@ pipeline {
                     sh 'mvn clean install -DskipTests'
 
                     sh """
-                        cd target/${env.NIFI_VERSION}-bin
-                        zip -r ../../../${env.NIFI_VERSION}-bin.zip .
+                        cd target/nifi-${params.NIFI_VERSION}-bin
+                        zip -r ../../../${params.NIFI_VERSION}-bin.zip .
                     """
                 }
             }
