@@ -90,7 +90,7 @@ pipeline {
                     sh 'cp infra/Dockerfile docker/Dockerfile'
 
                     // Copy NiFi build output from this pipeline into docker context
-                    sh "cp -r nifi-assembly/target/nifi-${params.NIFI_VERSION}-bin docker/nifi-bin"
+                    sh "cp -r nifi-assembly/target/nifi-${params.NIFI_VERSION}-bin/nifi-${params.NIFI_VERSION}/* docker/nifi-bin/"
                 }
             }
         }
