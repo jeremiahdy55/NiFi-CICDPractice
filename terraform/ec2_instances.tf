@@ -68,28 +68,28 @@ EOF
   ]
 }
 
-# resource "aws_instance" "nifi" {
-#   ami                         = var.ami_id
-#   instance_type               = var.instance_type_medium
-#   subnet_id                   = aws_subnet.public.id
-#   vpc_security_group_ids      = [aws_security_group.default.id]
-#   associate_public_ip_address = true
+resource "aws_instance" "nifi" {
+  ami                         = var.ami_id
+  instance_type               = var.instance_type_medium
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.default.id]
+  associate_public_ip_address = true
 
-#   # provide SSH key to access instance directly
-#   key_name = var.key_name
+  # provide SSH key to access instance directly
+  key_name = var.key_name
 
-#   tags = {
-#     Name = "NiFi-Server"
-#     Role = "nifi"
-#   }
+  tags = {
+    Name = "NiFi-Server"
+    Role = "nifi"
+  }
 
-#   root_block_device {
-#     volume_size = 12
-#     volume_type = "gp3"
-#   }
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp3"
+  }
 
-#   depends_on = [
-#     aws_internet_gateway.igw,
-#     aws_route_table_association.public_assoc,
-#   ]
-# }
+  depends_on = [
+    aws_internet_gateway.igw,
+    aws_route_table_association.public_assoc,
+  ]
+}
