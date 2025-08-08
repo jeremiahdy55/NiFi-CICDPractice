@@ -16,7 +16,15 @@ COPY --from=base /etc/ssl/certs /etc/ssl/certs
 # Copy your prebuilt NiFi (from Jenkins docker context)
 COPY nifi-bin/ /opt/nifi/
 
-RUN chown -R nifi:nifi /opt/nifi
+# strip out docs, Windows scripts, examples, unused NARs, etc.
+RUN chmod +x /opt/nifi/bin/nifi.sh \
+    && chmod -R +x /opt/nifi/bin/ \
+    && chown -R nifi:nifi /opt/nifi \
+    && rm -rf /opt/nifi/bin/*.bat \
+    && rm -rf /opt/nifi/conf/templates \
+    && rm -rf /opt/nifi/lib/logback* \
+    && rm -rf /opt/nifi/lib/kafka-client* \
+    && rm -rf /opt/nifi/lib/mysql-connector*
 
 USER nifi
 
