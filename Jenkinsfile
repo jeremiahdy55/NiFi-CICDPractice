@@ -216,7 +216,7 @@ EOF
         //         }
         //     }
         // }
-
+    }
     post {
         success{
             echo 'Build success!'
@@ -225,6 +225,6 @@ EOF
             echo 'Build failure :('
         }
     }
-}
+
 
 }
