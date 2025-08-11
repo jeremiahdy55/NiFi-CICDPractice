@@ -161,6 +161,9 @@ EOF
                         export FULL_TAG=${FULL_TAG}
                         aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
+                        export KUBECONFIG=/var/lib/jenkins/.kube/config
+                        kubectl get nodes
+
                         kubectl create namespace nifi || true
                         kubectl apply -f k8s/storage.yaml -n nifi
                         kubectl apply -f k8s/statefulset.yaml -n nifi
