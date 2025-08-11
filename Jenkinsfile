@@ -136,12 +136,12 @@ pipeline {
 
                             # Transfer the zip file to the NiFi EC2 instance using SCP (no -i needed)
                             scp -o StrictHostKeyChecking=no \
-                                ./${env.NIFI_VERSION}-bin.zip \
+                                ./${params.NIFI_VERSION}-bin.zip \
                                 ubuntu@\$NIFI_IP:/home/ubuntu/
 
                             # SSH into the EC2 instance and unzip
                             ssh -o StrictHostKeyChecking=no ubuntu@\$NIFI_IP << EOF
-                                unzip -o /home/ubuntu/${env.NIFI_VERSION}-bin.zip -d /home/ubuntu/
+                                unzip -o /home/ubuntu/${params.NIFI_VERSION}-bin.zip -d /home/ubuntu/
                                 echo "NiFi unzipped successfully."
 EOF
                         """
