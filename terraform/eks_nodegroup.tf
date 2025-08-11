@@ -30,6 +30,12 @@ resource "aws_iam_role_policy_attachment" "nodegroup_AmazonEKS_CNI_Policy" {
   role       = aws_iam_role.eks_nodegroup_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "nodegroup_AmazonEKS_EBS_CSI_Driver_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEKS_EBS_CSI_Driver_Policy"
+  role       = aws_iam_role.eks_nodegroup_role.name
+}
+
+
 resource "aws_launch_template" "eks_worker_lt" {
   name_prefix   = "eks-worker-"
   image_id      = data.aws_ssm_parameter.eks_ami.value
@@ -37,7 +43,7 @@ resource "aws_launch_template" "eks_worker_lt" {
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              /etc/eks/bootstrap.sh ${aws_eks_cluster.eks_cluster.name} --kubelet-extra-args '--node-labels=eks.amazonaws.com/nodegroup=eks-node-group'
+              /etc/eks/bootstrap.sh ${aws_eks_cluster.eks_cluster.name} --kubelet-extra-args '--node-labels=eks.amazonaws.com/nodegroup=eks-node-group --register-with-taints='
               EOF
   )
 
@@ -68,6 +74,7 @@ resource "aws_eks_node_group" "node_group" {
     aws_iam_role_policy_attachment.nodegroup_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.nodegroup_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.nodegroup_AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.nodegroup_AmazonEKS_EBS_CSI_Driver_Policy,
   ]
 }
 
