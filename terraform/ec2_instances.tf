@@ -57,7 +57,7 @@ EOF
   }
 
   root_block_device {
-    volume_size = 24   # 24 GB Storage
+    volume_size = 36   # 24 GB Storage
     volume_type = "gp3"
   }
 
@@ -84,7 +84,7 @@ resource "aws_instance" "nifi" {
   }
 
   root_block_device {
-    volume_size = 12
+    volume_size = 24
     volume_type = "gp3"
   }
 

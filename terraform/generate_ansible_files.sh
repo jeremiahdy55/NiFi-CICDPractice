@@ -98,6 +98,15 @@ cat <<EOF > "$ANSIBLE_DIR/configure_ec2instances.yml"
         - /tmp/awscliv2.zip
         - /tmp/aws
 
+    - name: Download latest kubectl binary
+      get_url:
+        url: "https://dl.k8s.io/release/{{ lookup('url', 'https://dl.k8s.io/release/stable.txt') }}/bin/linux/amd64/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: '0755'
+
+    - name: Verify kubectl installation
+      command: kubectl version --client
+
     - name: Download and save Jenkins GPG keyring
       get_url:
         url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key

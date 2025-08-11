@@ -21,3 +21,15 @@ output "subnet_id" {
 output "S3_bucket_name" {
   value = aws_s3_bucket.ci_config_bucket.bucket
 }
+
+output "eks_cluster_name" {
+  value = aws_eks_cluster.eks_cluster.name
+}
+
+output "eks_cluster_endpoint" {
+  value = aws_eks_cluster.eks_cluster.endpoint
+}
+
+output "eks_cluster_ca_certificate" {
+  value = aws_eks_cluster.eks_cluster.certificate_authority[0].data
+}

@@ -16,3 +16,5 @@ variable "key_name" {
   type    = string
   default = "TF_NiFi_Server_KEY"
 }
+
+

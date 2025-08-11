@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nifi
+spec:
+  serviceName: nifi
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nifi
+  template:
+    metadata:
+      labels:
+        app: nifi
+    spec:
+      initContainers:
+        - name: init-nifi-conf
+          image: jeremiahjava55/nifi-custom
+          command:
+            - sh
+            - -c
+            - |
+              # Modify the config file in place inside the PVC volume mount
+              sed -i \
+                -e 's@^#\?nifi.web.http.host=.*@nifi.web.http.host=0.0.0.0@' \
+                -e 's@^#\?nifi.web.http.port=.*@nifi.web.http.port=8080@' \
+                -e 's@^#\?nifi.web.http.network.interface.default=.*@nifi.web.http.network.interface.default=@' \
+                -e 's@^nifi.web.https.host=.*@# &@' \
+                -e 's@^nifi.web.https.port=.*@# &@' \
+                -e 's@^nifi.security\..*@# &@' \
+                -e 's@^#\?nifi.remote.input.host=.*@nifi.remote.input.host=@' \
+                -e 's@^#\?nifi.remote.input.secure=.*@nifi.remote.input.secure=false@' \
+                -e 's@^#\?nifi.remote.input.socket.port=.*@nifi.remote.input.socket.port=@' \
+                -e 's@^#\?nifi.remote.input.http.enabled=.*@nifi.remote.input.http.enabled=true@' \
+                -e 's@^#\?nifi.remote.input.http.transaction.ttl=.*@nifi.remote.input.http.transaction.ttl=30 sec@' \
+                -e 's@^#\?nifi.remote.contents.cache.expiration=.*@nifi.remote.contents.cache.expiration=30 secs@' \
+                /opt/nifi/conf/nifi.properties
+          volumeMounts:
+            - name: nifi-conf
+              mountPath: /config
+      containers:
+      - name: nifi
+        image: jeremiahjava55/nifi-custom
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nifi-storage
+          mountPath: /opt/nifi/conf
+  volumeClaimTemplates:
+  - metadata:
+      name: nifi-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: nifi-ebs
+      resources:
+        requests:
+          storage: 10Gi
