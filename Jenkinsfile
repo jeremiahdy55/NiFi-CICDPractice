@@ -161,6 +161,8 @@ EOF
                         export FULL_TAG=${FULL_TAG}
                         aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
+                        aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
+
                         export KUBECONFIG=/var/lib/jenkins/.kube/config
                         kubectl get nodes
 
