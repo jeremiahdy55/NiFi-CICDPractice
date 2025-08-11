@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "eks_cluster" {
-  name     = "my-eks-cluster"
+  name     = "my-eks-cluster" # used in {aws kubectl update-kubeconfig ...} command after {terraform apply}
   role_arn = aws_iam_role.eks_cluster_role.arn
   version = "1.29"
 
