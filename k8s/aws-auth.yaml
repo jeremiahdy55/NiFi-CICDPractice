@@ -1,3 +1,6 @@
+# Note: the value {jenkins-eks-role} corresponds to the "name" field of the role created by Terraform
+#       attached to the EC2 IAM profile, likewise for {eks-nodegroup-role}
+# Note: The value <816768290812> is the account number of the AWS-console account
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,5 +12,8 @@ data:
       username: jenkins
       groups:
         - system:masters
-# Note: the value {jenkins-eks-role} corresponds to the "name" field of the role created by Terraform
-#       attached to the EC2 IAM profile
+    - rolearn: arn:aws:iam::816768290812:role/eks-nodegroup-role
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
