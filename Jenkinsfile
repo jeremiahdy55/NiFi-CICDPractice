@@ -155,14 +155,11 @@ EOF
                 expression { currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
-                sh """
-                    set -e
-                    aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
-                """
                 dir('infra') {
                     sh """
                         set -e
                         export FULL_TAG=${FULL_TAG}
+                        aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
                         kubectl create namespace nifi || true
                         kubectl apply -f k8s/storage.yaml -n nifi
