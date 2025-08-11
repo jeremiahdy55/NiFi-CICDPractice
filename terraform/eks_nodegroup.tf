@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "nodegroup_AmazonEKS_CNI_Policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "nodegroup_AmazonEKS_EBS_CSI_Driver_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEKS_EBS_CSI_Driver_Policy"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.eks_nodegroup_role.name
 }
 
