@@ -164,6 +164,7 @@ EOF
                         aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
 
                         export KUBECONFIG=/var/lib/jenkins/.kube/config
+                        kubectl apply -f aws-auth.yaml
                         kubectl get configmap aws-auth -n kube-system -o yaml
 
                         kubectl get nodes
