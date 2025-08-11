@@ -36,8 +36,8 @@ spec:
                 -e 's@^#\?nifi.remote.contents.cache.expiration=.*@nifi.remote.contents.cache.expiration=30 secs@' \
                 /opt/nifi/conf/nifi.properties
           volumeMounts:
-            - name: nifi-conf
-              mountPath: /config
+            - name: nifi-storage
+              mountPath: /opt/nifi/conf
       containers:
       - name: nifi
         image: jeremiahjava55/nifi-custom

@@ -6,12 +6,12 @@ pipeline {
         maven 'maven3.9.3' 
     }
 
-    
-
     parameters {
         string(name: 'NIFI_VERSION', defaultValue: '1.26.0', description: 'NiFi version to build')
         string(name: 'DOCKERHUB_USER', defaultValue: 'jeremiahjava55', description: 'Docker Hub username')
         string(name: 'IMAGE_TAG', defaultValue: '1.26.0', description: 'Docker image tag')
+        string(name: 'EKS_CLUSTER_NAME', defaultValue: 'my-eks-cluster', description: 'Name of the EKS cluster provosioned by Terraform')
+        string(name: 'AWS_REGION', defaultValue: 'us-west-2', description: 'Name of the AWS region where Terraform provisions resources')
     }
 
     environment {
@@ -21,7 +21,7 @@ pipeline {
         REPO_URL        = 'https://github.com/apache/nifi.git'
         REPO_BRANCH     = "refs/tags/rel/nifi-${params.NIFI_VERSION}"
         // NIFI_VERSION    = 'nifi-1.26.0'
-        AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
+        // AWS_REGION      = 'us-west-2' // hard-coded, make sure this matches whatever is in terraform scripts
         IMAGE_NAME      = "${params.DOCKERHUB_USER}/nifi-custom"
         FULL_TAG        = "${IMAGE_NAME}:${params.IMAGE_TAG}"
         PERSONAL_GIT_REPO = 'https://github.com/jeremiahdy55/NiFi-CICDPractice.git'
@@ -121,10 +121,6 @@ pipeline {
             }
         }
 
-        
-        // TODO: modify build {nifi.properties} file before docker build
-        //       try and slim down image size
-        //       deploy to a terraform-issued EKS group
 
         stage('Copy artifact to NiFi server via SFTP') {
             steps {
@@ -154,33 +150,31 @@ EOF
             }
         }
 
-        // stage('Deploy to NiFi EC2') {
-        //         steps {
-        //             sshagent (credentials: ['nifi_ssh_key']) {
-        //                 sh """
-        //                     # Fetch S3_BUCKET Address
-        //                     S3_BUCKET=\$(grep '^S3_BUCKET=' /etc/environment | cut -d '=' -f2)
-                            
-        //                     # Fetch NiFi EC2 Instance's public IP from S3
-        //                     aws s3 cp s3://\$S3_BUCKET/nifi_ip.txt nifi_ip.txt
-        //                     NIFI_IP=\$(cat nifi_ip.txt)
+        stage('Configue kubeconfig and Deploy to EKS') {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' }
+            }
+            steps {
+                sh """
+                    set -e
+                    aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
+                """
+                dir('infra') {
+                    sh """
+                        set -e
+                        export FULL_TAG=${FULL_TAG}
 
-        //                     ssh -o StrictHostKeyChecking=no ubuntu@\$NIFI_IP << 'ENDSSH'
-        //                         echo "Pulling Docker image..."
-        //                         docker pull ${env.FULL_TAG}
-                                
-        //                         echo "Stopping existing container (if any)..."
-        //                         docker rm -f nifi-server || true
-
-        //                         echo "Running new container..."
-        //                         docker run -d --name nifi-server -p 8443:8443 ${env.FULL_TAG}
-        //                     ENDSSH
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+                        kubectl create namespace nifi || true
+                        kubectl apply -f k8s/storage.yaml -n nifi
+                        kubectl apply -f k8s/statefulset.yaml -n nifi
+                        kubectl rollout status statefulset/nifi -n nifi --timeout=10m
+                        kubectl apply -f k8s/service.yaml -n nifi
+                    """
+                }
+            }
+        }
     }
+
     post {
         success{
             echo 'Build success!'
