@@ -9,6 +9,7 @@ pipeline {
     parameters {
         string(name: 'NIFI_VERSION', defaultValue: '1.26.0', description: 'NiFi version to build')
         string(name: 'DOCKERHUB_USER', defaultValue: 'jeremiahjava55', description: 'Docker Hub username')
+        string(name: 'DOCKERHUB_EMAIL', defaultValue: 'jeremiahjava55@gmail.com', description: 'Docker Hub email')
         string(name: 'IMAGE_TAG', defaultValue: '1.26.0', description: 'Docker image tag')
         string(name: 'EKS_CLUSTER_NAME', defaultValue: 'my-eks-cluster', description: 'Name of the EKS cluster provosioned by Terraform')
         string(name: 'AWS_REGION', defaultValue: 'us-west-2', description: 'Name of the AWS region where Terraform provisions resources')
@@ -96,7 +97,7 @@ pipeline {
             }
         }
 
-         stage('Build & Push Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -155,35 +156,51 @@ EOF
                 expression { currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
-                dir('infra') {
-                    sh """
-                        set -e
-                        export FULL_TAG=${FULL_TAG}
-                        aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${env.DOCKER_CREDS}", 
+                        usernameVariable: 'DH_USER', 
+                        passwordVariable: 'DH_PASS'
+                    )
+                ]) {
+                    dir('infra') {
+                        sh """
+                            set -e
+                            export FULL_TAG=${FULL_TAG}
+                            aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
-                        aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
+                            aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
 
-                        export KUBECONFIG=/var/lib/jenkins/.kube/config
-                        kubectl apply -f k8s/aws-auth.yaml
-                        kubectl get configmap aws-auth -n kube-system -o yaml
+                            export KUBECONFIG=/var/lib/jenkins/.kube/config
+                            kubectl apply -f k8s/aws-auth.yaml
 
-                        kubectl get nodes
+                            kubectl create namespace nifi || true
 
-                        kubectl debug node/ip-10-0-2-222.us-west-2.compute.internal --image=busybox -- chroot /host sh
-                        wget https://registry-1.docker.io/v2/
+                            kubectl delete secret dockerhub-secret -n nifi --ignore-not-found=true
+                            kubectl create secret docker-registry dockerhub-secret \
+                              --docker-username=$DH_USER \
+                              --docker-password=$DH_PASS \
+                              --docker-email=${params.DOCKERHUB_EMAIL} \
+                              -n nifi
 
-                        
+                            kubectl get configmap aws-auth -n kube-system -o yaml
+                            kubectl get nodes
 
-                        kubectl create namespace nifi || true
+                            kubectl debug node/ip-10-0-2-222.us-west-2.compute.internal --image=busybox -- chroot /host sh
+                            wget https://registry-1.docker.io/v2/
 
-                        kubectl get pods -n nifi
-                        kubectl get pvc -n nifi
+                            
 
-                        kubectl apply -f k8s/storage.yaml -n nifi
-                        kubectl apply -f k8s/statefulset.yaml -n nifi
-                        kubectl rollout status statefulset/nifi -n nifi --timeout=10m
-                        kubectl apply -f k8s/service.yaml -n nifi
-                    """
+
+                            kubectl get pods -n nifi
+                            kubectl get pvc -n nifi
+
+                            kubectl apply -f k8s/storage.yaml -n nifi
+                            kubectl apply -f k8s/statefulset.yaml -n nifi
+                            kubectl rollout status statefulset/nifi -n nifi --timeout=10m
+                            kubectl apply -f k8s/service.yaml -n nifi
+                        """
+                    }
                 }
             }
         }
