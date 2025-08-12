@@ -35,8 +35,11 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 cleanWs()
-                sh 'kubectl delete svc --all'
-                sh 'kubectl delete deployments --all'
+                sh '''
+                aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
+                kubectl delete svc --all
+                kubectl delete deployments --all
+                '''
             }
         }
 
@@ -173,7 +176,7 @@ EOF
                             # remove all previous configurations
                             kubectl delete namespace nifi
 
-                            # re-apply the aws specifications (already done in Terraform, but redoing it here also)
+                            # configure the aws specifications
                             aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
                             aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
