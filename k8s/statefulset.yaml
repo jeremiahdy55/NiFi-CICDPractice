@@ -23,6 +23,12 @@ spec:
             - sh
             - -c
             - |
+              echo "Listing /opt/nifi"
+              ls -la /opt/nifi
+              echo "Listing /opt/nifi/conf-default"
+              ls -la /opt/nifi/conf-default
+              echo "Listing /opt/nifi/conf"
+              ls -la /opt/nifi/conf
               # Populate PVC first
               cp -r /opt/nifi/conf-default/* /opt/nifi/conf/
 
