@@ -168,8 +168,13 @@ EOF
                         kubectl get configmap aws-auth -n kube-system -o yaml
 
                         kubectl get nodes
+                        
 
                         kubectl create namespace nifi || true
+
+                        kubectl get pods -n nifi
+                        kubectl get pvc -n nifi
+                        
                         kubectl apply -f k8s/storage.yaml -n nifi
                         kubectl apply -f k8s/statefulset.yaml -n nifi
                         kubectl rollout status statefulset/nifi -n nifi --timeout=10m
