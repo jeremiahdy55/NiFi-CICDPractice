@@ -35,6 +35,8 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 cleanWs()
+                sh 'kubectl delete svc --all'
+                sh 'kubectl delete deployments --all'
             }
         }
 
