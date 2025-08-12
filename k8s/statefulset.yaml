@@ -9,6 +9,9 @@ spec:
     matchLabels:
       app: nifi
   template:
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
     metadata:
       labels:
         app: nifi
