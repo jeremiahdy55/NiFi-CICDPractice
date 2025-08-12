@@ -37,6 +37,8 @@ pipeline {
                 cleanWs()
                 sh """
                     aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
+                    # remove all previous configurations
+                    kubectl delete namespace nifi --ignore-not-found
                     kubectl delete svc --all
                     kubectl delete deployments --all
                 """
