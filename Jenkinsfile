@@ -167,15 +167,25 @@ EOF
                         sh """
                             set -e
                             export FULL_TAG=${FULL_TAG}
+
+                            # re-apply the aws specifications (already done in Terraform, but redoing it here also)
                             aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
                             aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
 
                             export KUBECONFIG=/var/lib/jenkins/.kube/config
+
+                            # remove all previous configurations
+                            kubectl delete -f k8s/
+                            kubectl delete namespace nifi
+
+                            # re-apply the aws authorizations (already done in Terraform, but redoing it here also)
                             kubectl apply -f k8s/aws-auth.yaml
 
+                            # create the namespace {nifi}
                             kubectl create namespace nifi || true
 
+                            # reset the previous dockerhub-secret (if any) and create it again with the {env.DOCKERHUB_CREDS}
                             kubectl delete secret dockerhub-secret -n nifi --ignore-not-found=true
                             kubectl create secret docker-registry dockerhub-secret \
                               --docker-username=$DH_USER \
@@ -183,11 +193,13 @@ EOF
                               --docker-email=${params.DOCKERHUB_EMAIL} \
                               -n nifi
 
+                            # Debugging
                             kubectl get configmap aws-auth -n kube-system -o yaml
                             kubectl get nodes
                             kubectl get pods -n nifi
                             kubectl get pvc -n nifi
 
+                            # apply EKS configurations and deploy pods
                             kubectl apply -f k8s/storage.yaml -n nifi
                             kubectl apply -f k8s/statefulset.yaml -n nifi
                             kubectl rollout status statefulset/nifi -n nifi --timeout=10m
