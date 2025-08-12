@@ -200,7 +200,7 @@ EOF
 
                             # apply EKS configurations and deploy pods
                             kubectl apply -f k8s/storage.yaml -n nifi
-                            kubectl apply -f k8s/statefulset.yaml -n nifi
+                            envsubst < k8s/statefulset.yaml | kubectl apply -n nifi -f -
                             kubectl rollout status statefulset/nifi -n nifi --timeout=10m
                             kubectl apply -f k8s/service.yaml -n nifi
                         """

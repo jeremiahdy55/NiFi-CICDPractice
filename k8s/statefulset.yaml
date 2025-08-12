@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
         - name: init-nifi-conf
-          image: jeremiahjava55/nifi-custom:1.26.0
+          image: ${FULL_TAG}
           securityContext:
             runAsUser: 0
           command:
@@ -32,8 +32,8 @@ spec:
               echo "Listing /opt/nifi/conf"
               ls -la /opt/nifi/conf
               # Populate PVC first
-              cp -r /opt/nifi/conf-default/* /opt/nifi/conf/
-
+              cp -a /opt/nifi/conf-default/. /opt/nifi/conf/
+              ls -la /opt/nifi/conf
               # Modify the config file in place inside the PVC volume mount
               sed -i \
                 -e 's@^#\?nifi.web.http.host=.*@nifi.web.http.host=0.0.0.0@' \
@@ -57,7 +57,7 @@ spec:
               mountPath: /opt/nifi/conf
       containers:
       - name: nifi
-        image: jeremiahjava55/nifi-custom:1.26.0
+        image: ${FULL_TAG}
         ports:
         - containerPort: 8080
         volumeMounts:
