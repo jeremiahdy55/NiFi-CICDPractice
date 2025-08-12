@@ -169,7 +169,6 @@ EOF
                             export FULL_TAG=${FULL_TAG}
 
                             # remove all previous configurations
-                            kubectl delete -f k8s/
                             kubectl delete namespace nifi
 
                             # re-apply the aws specifications (already done in Terraform, but redoing it here also)
