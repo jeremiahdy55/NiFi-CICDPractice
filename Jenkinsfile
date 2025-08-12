@@ -168,13 +168,17 @@ EOF
                         kubectl get configmap aws-auth -n kube-system -o yaml
 
                         kubectl get nodes
+
+                        kubectl debug node/ip-10-0-2-222.us-west-2.compute.internal --image=busybox -- chroot /host sh
+                        wget https://registry-1.docker.io/v2/
+
                         
 
                         kubectl create namespace nifi || true
 
                         kubectl get pods -n nifi
                         kubectl get pvc -n nifi
-                        
+
                         kubectl apply -f k8s/storage.yaml -n nifi
                         kubectl apply -f k8s/statefulset.yaml -n nifi
                         kubectl rollout status statefulset/nifi -n nifi --timeout=10m
