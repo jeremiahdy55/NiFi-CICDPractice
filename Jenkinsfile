@@ -35,11 +35,11 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 cleanWs()
-                sh '''
-                aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
-                kubectl delete svc --all
-                kubectl delete deployments --all
-                '''
+                sh """
+                    aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
+                    kubectl delete svc --all
+                    kubectl delete deployments --all
+                """
             }
         }
 
