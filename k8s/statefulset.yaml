@@ -23,6 +23,9 @@ spec:
             - sh
             - -c
             - |
+              # Populate PVC first
+              cp -r /opt/nifi/conf-default/* /opt/nifi/conf/
+
               # Modify the config file in place inside the PVC volume mount
               sed -i \
                 -e 's@^#\?nifi.web.http.host=.*@nifi.web.http.host=0.0.0.0@' \

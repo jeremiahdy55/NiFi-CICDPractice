@@ -17,7 +17,8 @@ COPY --from=base /etc/ssl/certs /etc/ssl/certs
 COPY nifi-bin/ /opt/nifi/
 
 # strip out docs, Windows scripts, examples, unused NARs, etc.
-RUN chmod +x /opt/nifi/bin/nifi.sh \
+RUN cp -r /opt/nifi/conf /opt/nifi/conf-default \
+    && chmod +x /opt/nifi/bin/nifi.sh \
     && chmod -R +x /opt/nifi/bin/ \
     && chown -R nifi:nifi /opt/nifi \
     && rm -rf /opt/nifi/bin/*.bat \
