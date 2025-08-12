@@ -19,6 +19,8 @@ spec:
       initContainers:
         - name: init-nifi-conf
           image: jeremiahjava55/nifi-custom:1.26.0
+          securityContext:
+            runAsUser: 0
           command:
             - sh
             - -c
@@ -47,6 +49,9 @@ spec:
                 -e 's@^#\?nifi.remote.input.http.transaction.ttl=.*@nifi.remote.input.http.transaction.ttl=30 sec@' \
                 -e 's@^#\?nifi.remote.contents.cache.expiration=.*@nifi.remote.contents.cache.expiration=30 secs@' \
                 /opt/nifi/conf/nifi.properties
+              
+              # modify permissions so that the user:{nifi} owns the newly edited /opt/nifi/conf folder
+              chown -R nifi:nifi /opt/nifi/conf
           volumeMounts:
             - name: nifi-storage
               mountPath: /opt/nifi/conf
