@@ -181,10 +181,6 @@ EOF
                             # configure the aws specifications
                             aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
 
-                            aws eks get-token --region us-west-2 --cluster-name my-eks-cluster
-
-                            export KUBECONFIG=/var/lib/jenkins/.kube/config
-
                             # re-apply the aws authorizations (already done in Terraform, but redoing it here also)
                             kubectl apply -f k8s/aws-auth.yaml
 
@@ -198,12 +194,6 @@ EOF
                               --docker-password=$DH_PASS \
                               --docker-email=${params.DOCKERHUB_EMAIL} \
                               -n nifi
-
-                            # Debugging
-                            kubectl get configmap aws-auth -n kube-system -o yaml
-                            kubectl get nodes
-                            kubectl get pods -n nifi
-                            kubectl get pvc -n nifi
 
                             # apply EKS configurations and deploy pods
                             kubectl apply -f k8s/storage.yaml -n nifi
