@@ -174,7 +174,7 @@ EOF
                             export FULL_TAG=${FULL_TAG}
 
                             # remove all previous configurations
-                            kubectl delete namespace nifi
+                            kubectl delete namespace nifi --ignore-not-found
 
                             # configure the aws specifications
                             aws eks update-kubeconfig --region ${params.AWS_REGION} --name ${params.EKS_CLUSTER_NAME}
